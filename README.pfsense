@@ -1,0 +1,4 @@
+To cross-compile for pfSense, do:
+
+  GOOS=freebsd GOARCH=amd64 go build sms_service.go smtp.go auth.go
+
