@@ -7,7 +7,7 @@ import (
     "time"
     "strings"
     "net/http"
-    "github.com/barnybug/gogsmmodem"
+    "github.com/mkke/gogsmmodem"
     "github.com/tarm/serial"
     "github.com/sevlyar/go-daemon"
 )
