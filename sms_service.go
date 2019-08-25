@@ -25,7 +25,7 @@ func main() {
 	baudRate := flag.Int("baudrate", 9600, "baud rate")
 	heaterPhoneNumber := flag.String("heater-phone-number", "", "heater phone number")
 	heaterCode := flag.String("heater-code", "1234", "heater code")
-	responseTimeout := flag.Int("response-timeout", 30, "response timeout (seconds)")
+	responseTimeout := flag.Int("response-timeout", 90, "response timeout (seconds)")
 	password := flag.String("password", "", "API password")
 	httpListen := flag.String("http-listen", ":5051", "HTTP listen interface")
 	daemonize := flag.Bool("daemon", false, "daemonize process")
