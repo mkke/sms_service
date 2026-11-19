@@ -12,7 +12,7 @@ import (
 
 	"github.com/mkke/gogsmmodem"
 	"github.com/sevlyar/go-daemon"
-	"github.com/tarm/serial"
+	"go.bug.st/serial"
 )
 
 // GitInfo is set via linker option
@@ -49,9 +49,13 @@ func main() {
 
     log.Printf("sms_service commit=%s\n", GitInfo)
 
-	conf := serial.Config{Name: *devicePath, Baud: *baudRate}
-	modem, err := gogsmmodem.Open(&conf, true)
+	port, err := serial.Open(*devicePath, &serial.Mode{BaudRate: *baudRate})
 	if err != nil {
+		log.Panic(err)
+	}
+	modem, err := gogsmmodem.New(port, true)
+	if err != nil {
+		port.Close()
 		log.Panic(err)
 	}
 
