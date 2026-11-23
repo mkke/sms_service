@@ -21,16 +21,19 @@ var GitInfo = "<wip>"
 func main() {
     log.SetFlags(log.Ldate|log.Ltime|log.LUTC)
 
-	devicePath := flag.String("device", "/dev/ttyU0.2", "modem device path")
+	devicePath := flag.String("device", "", "modem device path; empty finds the modem by --usb-device")
+	usbDevice := flag.String("usb-device", "12d1:15c1", "USB ID vendor:product of the modem")
+	usbSerial := flag.String("usb-serial", "", "USB serial number of the modem; empty matches any")
+	usbPort := flag.Int("usb-port", 2, "number of the modem's serial port that answers AT commands")
 	baudRate := flag.Int("baudrate", 9600, "baud rate")
 	heaterPhoneNumber := flag.String("heater-phone-number", "", "heater phone number")
 	heaterCode := flag.String("heater-code", "1234", "heater code")
 	responseTimeout := flag.Int("response-timeout", 90, "response timeout (seconds)")
-	password := flag.String("password", "", "API password")
+	passwordFile := flag.String("password-file", "", "file holding the API password")
 	httpListen := flag.String("http-listen", ":5051", "HTTP listen interface")
 	daemonize := flag.Bool("daemon", false, "daemonize process")
 	smtpUsername := flag.String("smtp-username", "", "SMTP username")
-	smtpPassword := flag.String("smtp-password", "", "SMTP password")
+	smtpPasswordFile := flag.String("smtp-password-file", "", "file holding the SMTP password")
 	smtpHost := flag.String("smtp-host", "", "SMTP host")
 	smsForwardAddress := flag.String("sms-forward-address", "", "SMS forwarding email address")
 	senderAddress := flag.String("sender-address", "", "email sender address")
@@ -49,7 +52,22 @@ func main() {
 
     log.Printf("sms_service commit=%s\n", GitInfo)
 
-	port, err := serial.Open(*devicePath, &serial.Mode{BaudRate: *baudRate})
+	password, err := readSecret(*passwordFile)
+	if err != nil {
+		log.Panic(err)
+	}
+	smtpPassword, err := readSecret(*smtpPasswordFile)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	device, err := modemDevice(*devicePath, *usbDevice, *usbSerial, *usbPort)
+	if err != nil {
+		log.Panic(err)
+	}
+	log.Printf("modem on %s\n", device)
+
+	port, err := serial.Open(device, &serial.Mode{BaudRate: *baudRate})
 	if err != nil {
 		log.Panic(err)
 	}
@@ -93,7 +111,7 @@ func main() {
         log.Println("daemonized")
 	}
 
-	smtpAuth := CRAMMD5Auth(*smtpUsername, *smtpPassword)
+	smtpAuth := CRAMMD5Auth(*smtpUsername, smtpPassword)
 
 	var modemLock = &sync.Mutex{}
 
@@ -151,7 +169,7 @@ func main() {
 					fmt.Fprintf(w, "{}")
 				}
 			case "send":
-				if r.FormValue("password") != *password {
+				if r.FormValue("password") != password {
 					w.WriteHeader(http.StatusUnauthorized)
 					return
 				}
