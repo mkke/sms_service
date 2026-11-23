@@ -27,7 +27,7 @@ func main() {
 	usbPort := flag.Int("usb-port", 2, "number of the modem's serial port that answers AT commands")
 	baudRate := flag.Int("baudrate", 9600, "baud rate")
 	heaterPhoneNumber := flag.String("heater-phone-number", "", "heater phone number")
-	heaterCode := flag.String("heater-code", "1234", "heater code")
+	heaterCodeFile := flag.String("heater-code-file", "", "file holding the heater code; empty uses the code 1234")
 	responseTimeout := flag.Int("response-timeout", 90, "response timeout (seconds)")
 	passwordFile := flag.String("password-file", "", "file holding the API password")
 	httpListen := flag.String("http-listen", ":5051", "HTTP listen interface")
@@ -59,6 +59,13 @@ func main() {
 	smtpPassword, err := readSecret(*smtpPasswordFile)
 	if err != nil {
 		log.Panic(err)
+	}
+	heaterCode := "1234"
+	if *heaterCodeFile != "" {
+		heaterCode, err = readSecret(*heaterCodeFile)
+		if err != nil {
+			log.Panic(err)
+		}
 	}
 
 	device, err := modemDevice(*devicePath, *usbDevice, *usbSerial, *usbPort)
@@ -185,7 +192,7 @@ func main() {
 				for len(receivedMessages) > 0 {
 					<-receivedMessages
 				}
-				err = modem.SendMessage(*heaterPhoneNumber, *heaterCode+command)
+				err = modem.SendMessage(*heaterPhoneNumber, heaterCode+command)
 				modemLock.Unlock()
 
 				w.Header().Set("Content-Type", "application/json")

@@ -1,0 +1,49 @@
+<model>
+    <mount>//OPNsense/smsservice</mount>
+    <description>SMS gateway</description>
+    <version>1.0.0</version>
+    <items>
+        <enabled type="BooleanField">
+            <Default>0</Default>
+            <Required>Y</Required>
+        </enabled>
+        <usbdevice type="TextField">
+            <Default>12d1:15c1</Default>
+            <Required>Y</Required>
+            <Mask>/^[0-9a-fA-F]{4}:[0-9a-fA-F]{4}$/</Mask>
+            <ValidationMessage>Enter the USB ID as four hexadecimal digits, a colon and four hexadecimal digits.</ValidationMessage>
+        </usbdevice>
+        <usbserial type="TextField"/>
+        <usbport type="IntegerField">
+            <Default>2</Default>
+            <Required>Y</Required>
+            <MinimumValue>0</MinimumValue>
+            <MaximumValue>15</MaximumValue>
+            <ValidationMessage>Enter a port number from 0 to 15.</ValidationMessage>
+        </usbport>
+        <device type="TextField"/>
+        <baudrate type="IntegerField">
+            <Default>9600</Default>
+            <Required>Y</Required>
+        </baudrate>
+        <heaterphone type="TextField"/>
+        <heatercode type="UpdateOnlyTextField"/>
+        <responsetimeout type="IntegerField">
+            <Default>90</Default>
+            <Required>Y</Required>
+            <MinimumValue>1</MinimumValue>
+            <ValidationMessage>Enter a timeout of at least 1 second.</ValidationMessage>
+        </responsetimeout>
+        <listenaddress type="TextField"/>
+        <listenport type="PortField">
+            <Default>5051</Default>
+            <Required>Y</Required>
+        </listenport>
+        <apipassword type="UpdateOnlyTextField"/>
+        <smtphost type="TextField"/>
+        <smtpusername type="TextField"/>
+        <smtppassword type="UpdateOnlyTextField"/>
+        <forwardaddress type="EmailField"/>
+        <senderaddress type="EmailField"/>
+    </items>
+</model>

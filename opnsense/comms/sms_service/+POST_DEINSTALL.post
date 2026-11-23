@@ -1,0 +1,8 @@
+rm -rf /etc/rc.conf.d/sms_service /usr/local/etc/sms_service
+if [ -f /usr/local/etc/rc.d/configd ]; then /usr/local/etc/rc.d/configd restart; fi
+if /usr/sbin/pw usershow sms_service >/dev/null 2>&1; then
+	/usr/sbin/pw userdel sms_service
+fi
+if /usr/sbin/pw groupshow sms_service >/dev/null 2>&1; then
+	/usr/sbin/pw groupdel sms_service
+fi

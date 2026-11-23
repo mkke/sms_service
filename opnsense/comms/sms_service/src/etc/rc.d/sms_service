@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# PROVIDE: sms_service
+# REQUIRE: NETWORKING syslogd
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name=sms_service
+rcvar=sms_service_enable
+
+load_rc_config $name
+
+: ${sms_service_enable:="NO"}
+: ${sms_service_args:=""}
+
+# The pid file names the daemon(8) supervisor, which restarts the program and
+# whose process title starts with "daemon:". rc.subr matches that title
+# against the base name of command, so procname stays unset.
+pidfile=/var/run/sms_service.pid
+command=/usr/sbin/daemon
+# The program's arguments are in sms_service_args, not sms_service_flags:
+# rc.subr puts ${name}_flags directly after command, where daemon(8) would
+# read them as its own options.
+command_args="-P ${pidfile} -r -S -T ${name} -u sms_service /usr/local/bin/sms_service ${sms_service_args}"
+
+start_precmd=sms_service_prestart
+
+# configd renders the secret files owned by root with mode 0600, and
+# daemon -u starts the program as sms_service, which reads them at start.
+# Hand each file to sms_service before every start, because every template
+# reload writes it as root again.
+sms_service_prestart()
+{
+	local f
+
+	for f in api-password smtp-password heater-code; do
+		f=/usr/local/etc/sms_service/$f
+		if [ -f "$f" ]; then
+			chown sms_service:sms_service "$f" && chmod 0400 "$f" || return 1
+		fi
+	done
+}
+
+run_rc_command "$1"

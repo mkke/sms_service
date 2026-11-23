@@ -1,0 +1,16 @@
+# pw allocates ids from 1000 up, the range of login users, so the lowest id
+# from 100 to 999 that is free as a uid and as a gid is chosen here.
+if ! /usr/sbin/pw usershow sms_service >/dev/null 2>&1; then
+	id=100
+	while /usr/sbin/pw usershow -u $id >/dev/null 2>&1 || /usr/sbin/pw groupshow -g $id >/dev/null 2>&1; do
+		id=$((id + 1))
+		if [ $id -gt 999 ]; then
+			echo "no free system id for the user sms_service" >&2
+			exit 1
+		fi
+	done
+	if ! /usr/sbin/pw groupshow sms_service >/dev/null 2>&1; then
+		/usr/sbin/pw groupadd sms_service -g $id
+	fi
+	/usr/sbin/pw useradd sms_service -u $id -g sms_service -G dialer -c "SMS gateway" -d /nonexistent -s /usr/sbin/nologin -h -
+fi

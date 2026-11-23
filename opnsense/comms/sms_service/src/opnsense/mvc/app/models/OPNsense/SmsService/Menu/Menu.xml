@@ -1,0 +1,8 @@
+<menu>
+    <Services>
+        <SmsService VisibleName="SMS Gateway" cssClass="fa fa-commenting fa-fw">
+            <Settings order="10" url="/ui/smsservice/general"/>
+            <Log order="20" url="/ui/diagnostics/log/core/smsservice"/>
+        </SmsService>
+    </Services>
+</menu>

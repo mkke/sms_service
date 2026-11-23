@@ -1,1 +1,4 @@
-sms_service
+/sms_service
+/build
+/.depends
+/.gomake

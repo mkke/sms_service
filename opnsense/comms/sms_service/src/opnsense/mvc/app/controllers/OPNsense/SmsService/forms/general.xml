@@ -1,0 +1,120 @@
+<form>
+    <field>
+        <id>general.enabled</id>
+        <label>Enable</label>
+        <type>checkbox</type>
+        <help>Start the SMS gateway at boot and when the settings are applied.</help>
+    </field>
+    <field>
+        <label>Modem</label>
+        <type>header</type>
+    </field>
+    <field>
+        <id>general.usbdevice</id>
+        <label>USB device</label>
+        <type>text</type>
+        <help>USB ID of the modem as vendor:product, for example 12d1:15c1 for a Huawei ME906s.</help>
+    </field>
+    <field>
+        <id>general.usbserial</id>
+        <label>USB serial number</label>
+        <type>text</type>
+        <help>Serial number of the modem. Leave empty to use any modem with the USB ID above.</help>
+    </field>
+    <field>
+        <id>general.usbport</id>
+        <label>Serial port</label>
+        <type>text</type>
+        <help>Number of the modem's serial port that answers AT commands. Port 2 is /dev/cuaU0.2 on a modem that is /dev/cuaU0.</help>
+    </field>
+    <field>
+        <id>general.device</id>
+        <label>Device</label>
+        <type>text</type>
+        <help>Device path of the serial port, for example /dev/cuaU0.2. When set, it is used instead of the USB device, serial number and port.</help>
+    </field>
+    <field>
+        <id>general.baudrate</id>
+        <label>Baud rate</label>
+        <type>text</type>
+        <help>Baud rate of the serial port.</help>
+    </field>
+    <field>
+        <label>Heater</label>
+        <type>header</type>
+    </field>
+    <field>
+        <id>general.heaterphone</id>
+        <label>Heater phone number</label>
+        <type>text</type>
+        <help>Phone number of the heater, as the modem reports the sender of an SMS, for example +491701234567. Replies from this number answer the HTTP API; SMS from other numbers are forwarded by mail.</help>
+    </field>
+    <field>
+        <id>general.heatercode</id>
+        <label>Heater code</label>
+        <type>password</type>
+        <help>Code put in front of every command sent to the heater. Leave empty to keep the stored code; with no code stored, 1234 is used.</help>
+    </field>
+    <field>
+        <id>general.responsetimeout</id>
+        <label>Response timeout</label>
+        <type>text</type>
+        <help>Seconds the HTTP API waits for the heater's reply.</help>
+    </field>
+    <field>
+        <label>HTTP API</label>
+        <type>header</type>
+    </field>
+    <field>
+        <id>general.listenaddress</id>
+        <label>Listen address</label>
+        <type>text</type>
+        <help>IP address the HTTP API listens on. Leave empty to listen on all addresses. A firewall rule must pass the port to it.</help>
+    </field>
+    <field>
+        <id>general.listenport</id>
+        <label>Listen port</label>
+        <type>text</type>
+        <help>TCP port the HTTP API listens on.</help>
+    </field>
+    <field>
+        <id>general.apipassword</id>
+        <label>API password</label>
+        <type>password</type>
+        <help>Password a send request must carry. Leave empty to keep the stored password.</help>
+    </field>
+    <field>
+        <label>Mail forwarding</label>
+        <type>header</type>
+    </field>
+    <field>
+        <id>general.smtphost</id>
+        <label>SMTP host</label>
+        <type>text</type>
+        <help>Mail server that received SMS are sent through, on port 25. Leave empty to forward nothing.</help>
+    </field>
+    <field>
+        <id>general.smtpusername</id>
+        <label>SMTP username</label>
+        <type>text</type>
+        <help>Username for CRAM-MD5 authentication at the mail server.</help>
+    </field>
+    <field>
+        <id>general.smtppassword</id>
+        <label>SMTP password</label>
+        <type>password</type>
+        <help>Password for CRAM-MD5 authentication at the mail server. Leave empty to keep the stored password.</help>
+    </field>
+    <field>
+        <id>general.forwardaddress</id>
+        <label>Forward address</label>
+        <type>text</type>
+        <help>Mail address that received SMS are sent to.</help>
+    </field>
+    <field>
+        <id>general.senderaddress</id>
+        <label>Sender address</label>
+        <type>text</type>
+        <help>Mail address the forwarded SMS are sent from.</help>
+    </field>
+</form>

@@ -1,0 +1,4 @@
+sms_service:/etc/rc.conf.d/sms_service
+api-password:/usr/local/etc/sms_service/api-password
+smtp-password:/usr/local/etc/sms_service/smtp-password
+heater-code:/usr/local/etc/sms_service/heater-code

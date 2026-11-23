@@ -1,0 +1,36 @@
+{% if helpers.exists('OPNsense.smsservice') %}
+{% set s = OPNsense.smsservice %}
+{% else %}
+{% set s = {} %}
+{% endif %}
+{% if s.enabled|default('0', true) == '1' %}
+sms_service_enable="YES"
+{% else %}
+sms_service_enable="NO"
+{% endif %}
+{#
+  Each value is quoted on its own, and the joined line is quoted again for
+  the assignment: rc.subr runs command_args through eval, which removes the
+  inner quotes.
+#}
+{% set args = [] %}
+{% if s.usbdevice|default('', true) != '' %}{% set args = args + ['--usb-device', s.usbdevice|shlex_quote] %}{% endif %}
+{% if s.usbserial|default('', true) != '' %}{% set args = args + ['--usb-serial', s.usbserial|shlex_quote] %}{% endif %}
+{% if s.usbport|default('', true) != '' %}{% set args = args + ['--usb-port', s.usbport|shlex_quote] %}{% endif %}
+{% if s.device|default('', true) != '' %}{% set args = args + ['--device', s.device|shlex_quote] %}{% endif %}
+{% if s.baudrate|default('', true) != '' %}{% set args = args + ['--baudrate', s.baudrate|shlex_quote] %}{% endif %}
+{% if s.heaterphone|default('', true) != '' %}{% set args = args + ['--heater-phone-number', s.heaterphone|shlex_quote] %}{% endif %}
+{% if s.heatercode|default('', true) != '' %}{% set args = args + ['--heater-code-file', '/usr/local/etc/sms_service/heater-code'] %}{% endif %}
+{% if s.responsetimeout|default('', true) != '' %}{% set args = args + ['--response-timeout', s.responsetimeout|shlex_quote] %}{% endif %}
+{% if s.listenport|default('', true) != '' %}
+{% set address = s.listenaddress|default('', true) %}
+{% if ':' in address %}{% set address = '[' + address + ']' %}{% endif %}
+{% set args = args + ['--http-listen', (address + ':' + s.listenport)|shlex_quote] %}
+{% endif %}
+{% if s.apipassword|default('', true) != '' %}{% set args = args + ['--password-file', '/usr/local/etc/sms_service/api-password'] %}{% endif %}
+{% if s.smtphost|default('', true) != '' %}{% set args = args + ['--smtp-host', s.smtphost|shlex_quote] %}{% endif %}
+{% if s.smtpusername|default('', true) != '' %}{% set args = args + ['--smtp-username', s.smtpusername|shlex_quote] %}{% endif %}
+{% if s.smtppassword|default('', true) != '' %}{% set args = args + ['--smtp-password-file', '/usr/local/etc/sms_service/smtp-password'] %}{% endif %}
+{% if s.forwardaddress|default('', true) != '' %}{% set args = args + ['--sms-forward-address', s.forwardaddress|shlex_quote] %}{% endif %}
+{% if s.senderaddress|default('', true) != '' %}{% set args = args + ['--sender-address', s.senderaddress|shlex_quote] %}{% endif %}
+sms_service_args={{ args|join(' ')|shlex_quote }}

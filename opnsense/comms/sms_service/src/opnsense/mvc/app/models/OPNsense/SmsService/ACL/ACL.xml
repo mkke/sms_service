@@ -1,0 +1,11 @@
+<acl>
+    <page-services-smsservice>
+        <name>Services: SMS Gateway</name>
+        <patterns>
+            <pattern>ui/smsservice/*</pattern>
+            <pattern>api/smsservice/*</pattern>
+            <pattern>ui/diagnostics/log/core/smsservice*</pattern>
+            <pattern>api/diagnostics/log/core/smsservice*</pattern>
+        </patterns>
+    </page-services-smsservice>
+</acl>

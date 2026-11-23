@@ -1,0 +1,3 @@
+sms_service sends SMS through an LTE modem on USB. An HTTP API sends a
+command to a heater and returns the heater's reply, and received SMS
+from other numbers are forwarded by mail.

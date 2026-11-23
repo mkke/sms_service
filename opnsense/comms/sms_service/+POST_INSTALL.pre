@@ -1,0 +1,1 @@
+install -d -m 0700 -o sms_service -g sms_service /usr/local/etc/sms_service

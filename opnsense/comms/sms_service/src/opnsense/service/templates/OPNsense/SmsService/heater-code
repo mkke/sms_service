@@ -1,0 +1,1 @@
+{% if helpers.exists('OPNsense.smsservice.heatercode') %}{{ OPNsense.smsservice.heatercode|default('', true) }}{% endif %}
