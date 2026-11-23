@@ -48,23 +48,5 @@ implement missing sim handling in the daemon". The ME906s answers
 `gogsmmodem.New`; `log.Panic` at `sms_service.go:84` ends the program and
 `daemon -r` restarts it every second.
 
-1. gogsmmodem (github.com/mkke/gogsmmodem, `go 1.18`; a push publishes on
-   GitHub and needs the user's yes). Approved and started, uncommitted in
-   `/Users/ms/git/gogsmmodem`: `errors.go` (`*ModemError` with command,
-   status line, code, CMS flag; `CMESIMNotInserted = 10` and other SIM
-   codes; `Error()` appends the 27.007 meaning), `errors_test.go`,
-   `packets.go` (`ERROR.Status`), `gsm.go` (`parsePacket` keeps the status,
-   `send`/`sendBody` return `*ModemError`). The new tests pass alone and the
-   old ones pass alone; the full run fails without naming a test. Open: the
-   `listen` goroutine (`gsm.go:255`) and the `lineChannel` reader never
-   exit, so a failed `New` leaks them and they spin on the closed port
-   (`Read("") = (0, Port has been closed)` in the firewall log). Give
-   `listen` a shutdown on `New` failure and in `Close`, find the full-run
-   failure, add the README changelog entry, commit, ask about the push,
-   then pin it here.
-2. sms_service: start the HTTP server first; a goroutine opens the port and
-   runs `gogsmmodem.New`, on failure closes the port and retries every 60
-   seconds, logging each distinct error once. While the modem is not ready,
-   `/signal` answers `{"modem":"<error>"}` and `/send` answers 503 with
-   `{"send-status":"ERROR","error":"modem not ready: ..."}` (heater-backend's
-   `relay.Signal` and its `send-status`/`error` patterns read both).
+The daemon retries the modem (`modem.go`). Not yet tested on the firewall
+with os-sms_service 1.1.
