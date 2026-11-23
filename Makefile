@@ -18,6 +18,7 @@ sms_service:
 plugin: $(PACKAGE)
 
 $(PACKAGE): sms_service $(PLUGIN_FILES)
+	@mkdir -p $(dir $@)
 	@echo [freebsdpkgctl plugin lint] $(PLUGIN)
 	@$(FREEBSDPKGCTL) plugin lint $(PLUGIN)
 	@echo [freebsdpkgctl plugin build] $@
