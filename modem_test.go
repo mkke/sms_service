@@ -174,6 +174,33 @@ func TestLinkSIMErrorOfCommand(t *testing.T) {
 	waitFor(t, "a second attempt", func() bool { return opens.Load() >= 2 })
 }
 
+// A command that timed out makes the link not ready with the timeout, and
+// it connects again.
+func TestLinkTimeoutOfCommand(t *testing.T) {
+	gate := make(chan struct{})
+	var opens atomic.Int32
+	l, _ := startLink(t, func() (io.ReadWriteCloser, error) {
+		if opens.Add(1) > 1 {
+			<-gate
+		}
+		return gogsmmodem.NewMockSerialPort(initReplay), nil
+	})
+	// Cleanups run last first, so this one ends a blocked open before
+	// startLink's cleanup waits for run.
+	var once sync.Once
+	release := func() { once.Do(func() { close(gate) }) }
+	t.Cleanup(release)
+	waitFor(t, "the modem is ready", func() bool { return isReady(l) })
+	if err := l.do(func(*gogsmmodem.Modem) error { return gogsmmodem.ErrTimeout }); err != gogsmmodem.ErrTimeout {
+		t.Errorf("do = %v, want ErrTimeout", err)
+	}
+	if _, err := l.status(); err != gogsmmodem.ErrTimeout {
+		t.Errorf("status error = %v, want ErrTimeout", err)
+	}
+	release()
+	waitFor(t, "a second attempt", func() bool { return opens.Load() >= 2 })
+}
+
 // Another error of a command keeps the modem ready.
 func TestLinkOtherErrorOfCommand(t *testing.T) {
 	l, _ := startLink(t, func() (io.ReadWriteCloser, error) {

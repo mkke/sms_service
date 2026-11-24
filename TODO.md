@@ -48,5 +48,6 @@ implement missing sim handling in the daemon". The ME906s answers
 `gogsmmodem.New`; `log.Panic` at `sms_service.go:84` ends the program and
 `daemon -r` restarts it every second.
 
-The daemon retries the modem (`modem.go`). Not yet tested on the firewall
-with os-sms_service 1.1.
+The daemon retries the modem (`modem.go`), and gogsmmodem bounds each
+command with `CommandTimeout`. Not yet tested on the firewall with
+os-sms_service 1.2.

@@ -159,8 +159,9 @@ func (l *modemLink) status() (gogsmmodem.SignalStatus, error) {
 }
 
 // do calls f with the ready modem and returns its error. While no modem is
-// ready it returns a notReadyError instead. When f fails with a SIM error,
-// do closes the modem, and run connects again after retry.
+// ready it returns a notReadyError instead. When f fails with a SIM error or
+// with gogsmmodem.ErrTimeout, do records that error as the reason and closes
+// the modem, and run connects again after retry.
 func (l *modemLink) do(f func(*gogsmmodem.Modem) error) error {
 	l.cmd.Lock()
 	defer l.cmd.Unlock()
@@ -171,7 +172,7 @@ func (l *modemLink) do(f func(*gogsmmodem.Modem) error) error {
 		return notReadyError{cause}
 	}
 	err := f(m)
-	if isSIMError(err) {
+	if isSIMError(err) || err == gogsmmodem.ErrTimeout {
 		l.setNotReady(m, err)
 		m.Close()
 	}

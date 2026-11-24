@@ -6,8 +6,8 @@ github.com/creack/goselect v0.1.3 h1:MaGNMclRo7P2Jl21hBpR1Cn33ITSbKP6E49RtfblLKc
 github.com/creack/goselect v0.1.3/go.mod h1:a/NhLweNvqIYMuxcMOuWY516Cimucms3DglDzQP3hKY=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/mkke/gogsmmodem v0.0.0-20261123172718-b95ad333dae2 h1:a1cXQP9hEpAqEnCF+YxwBQDllPQWcVQAgit7N0lTOt0=
-github.com/mkke/gogsmmodem v0.0.0-20261123172718-b95ad333dae2/go.mod h1:e6cqz97/MfbT6RTyC46N+bVXZ3k3eVv7XeLFMZ03ozw=
+github.com/mkke/gogsmmodem v0.0.0-20261124092635-58f6b37605da h1:2AaS8IJv6mbYogMwEfXlbL7kaANtUvfbOy5J5HvsLaA=
+github.com/mkke/gogsmmodem v0.0.0-20261124092635-58f6b37605da/go.mod h1:e6cqz97/MfbT6RTyC46N+bVXZ3k3eVv7XeLFMZ03ozw=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
