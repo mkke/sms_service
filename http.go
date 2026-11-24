@@ -17,7 +17,7 @@ import (
 // any other message goes out by mail when smtpHost is set.
 type server struct {
 	link              *modemLink
-	log               *log.Logger
+	log               *levelLog
 	password          string
 	heaterPhoneNumber string
 	heaterCode        string
@@ -33,7 +33,7 @@ type server struct {
 // handleMessage reads the message that n reports, hands it on and deletes it
 // from the modem.
 func (s *server) handleMessage(n gogsmmodem.MessageNotification) {
-	s.log.Println("Message notification:", n)
+	s.log.Info.Println("Message notification:", n)
 	s.link.do(func(m *gogsmmodem.Modem) error {
 		msg, err := m.GetMessage(n.Index)
 		if err != nil {
@@ -44,7 +44,7 @@ func (s *server) handleMessage(n gogsmmodem.MessageNotification) {
 		} else if s.smtpHost != "" {
 			go s.forward(msg)
 		}
-		s.log.Printf("Message from %s: %s\n", msg.Telephone, msg.Body)
+		s.log.Info.Printf("Message from %s: %s\n", msg.Telephone, msg.Body)
 		m.DeleteMessage(n.Index)
 		return nil
 	})
@@ -62,7 +62,7 @@ func (s *server) forward(msg *gogsmmodem.Message) {
 	err := SendMail(s.smtpHost+":25", s.smtpAuth, s.senderAddress,
 		[]string{s.smsForwardAddress}, mail)
 	if err != nil {
-		s.log.Println("Forwarding SMS failed: ", err)
+		s.log.Warning.Println("Forwarding SMS failed: ", err)
 	}
 }
 
@@ -73,7 +73,7 @@ func (s *server) forward(msg *gogsmmodem.Message) {
 // (503).
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	s.log.Printf("HTTP: %s\n", r.URL)
+	s.log.Info.Printf("HTTP: %s\n", r.URL)
 	switch r.URL.Path[1:] {
 	case "signal":
 		w.Header().Set("Content-Type", "application/json")

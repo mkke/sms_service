@@ -13,7 +13,7 @@ sms_service_enable="NO"
   the assignment: rc.subr runs command_args through eval, which removes the
   inner quotes.
 #}
-{% set args = [] %}
+{% set args = ['--syslog'] %}
 {% if s.usbdevice|default('', true) != '' %}{% set args = args + ['--usb-device', s.usbdevice|shlex_quote] %}{% endif %}
 {% if s.usbserial|default('', true) != '' %}{% set args = args + ['--usb-serial', s.usbserial|shlex_quote] %}{% endif %}
 {% if s.usbport|default('', true) != '' %}{% set args = args + ['--usb-port', s.usbport|shlex_quote] %}{% endif %}

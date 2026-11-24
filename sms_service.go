@@ -35,34 +35,47 @@ func main() {
 	smtpHost := flag.String("smtp-host", "", "SMTP host")
 	smsForwardAddress := flag.String("sms-forward-address", "", "SMS forwarding email address")
 	senderAddress := flag.String("sender-address", "", "email sender address")
-	logPath := flag.String("log", "-", "log file path ('-' = stdout)")
+	logPath := flag.String("log", "-", "log file path ('-' = stdout); ignored with --syslog")
+	useSyslog := flag.Bool("syslog", false, "write to syslog, facility daemon, with a severity per line")
 	flag.Parse()
 
-	if logPath != nil && len(*logPath) > 0 && *logPath != "-" {
-		f, err := os.OpenFile(*logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0664)
-		if err != nil {
-			panic(err)
+	var lv *levelLog
+	if *useSyslog {
+		var err error
+		if lv, err = newSyslogLevelLog("sms_service"); err != nil {
+			log.Fatal(err)
 		}
+		// gogsmmodem writes its port traffic through the standard logger.
+		log.SetFlags(0)
+		log.SetOutput(lv.Debug.Writer())
+	} else {
+		if logPath != nil && len(*logPath) > 0 && *logPath != "-" {
+			f, err := os.OpenFile(*logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0664)
+			if err != nil {
+				panic(err)
+			}
 
-		defer f.Close()
-		log.SetOutput(f)
+			defer f.Close()
+			log.SetOutput(f)
+		}
+		lv = newLevelLog(log.Writer(), log.Flags())
 	}
 
-    log.Printf("sms_service commit=%s\n", GitInfo)
+	lv.Notice.Printf("sms_service commit=%s\n", GitInfo)
 
 	password, err := readSecret(*passwordFile)
 	if err != nil {
-		log.Panic(err)
+		lv.Error.Fatal(err)
 	}
 	smtpPassword, err := readSecret(*smtpPasswordFile)
 	if err != nil {
-		log.Panic(err)
+		lv.Error.Fatal(err)
 	}
 	heaterCode := "1234"
 	if *heaterCodeFile != "" {
 		heaterCode, err = readSecret(*heaterCodeFile)
 		if err != nil {
-			log.Panic(err)
+			lv.Error.Fatal(err)
 		}
 	}
 
@@ -77,15 +90,15 @@ func main() {
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", device, err)
 		}
-		log.Printf("modem on %s\n", device)
+		lv.Notice.Printf("modem on %s\n", device)
 		return port, nil
 	}
-	link := newModemLink(open, time.Minute, log.Default())
+	link := newModemLink(open, time.Minute, lv)
 	link.debug = true
 
 	s := &server{
 		link:              link,
-		log:               log.Default(),
+		log:               lv,
 		password:          password,
 		heaterPhoneNumber: *heaterPhoneNumber,
 		heaterCode:        heaterCode,
@@ -99,5 +112,5 @@ func main() {
 	link.onMessage = s.handleMessage
 
 	go link.run(context.Background())
-	log.Panic(http.ListenAndServe(*httpListen, s))
+	lv.Error.Fatal(http.ListenAndServe(*httpListen, s))
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"log"
 	"sync"
 	"time"
 
@@ -40,7 +39,7 @@ type modemLink struct {
 	retry time.Duration
 	// debug makes gogsmmodem log every read and write on the port.
 	debug bool
-	log   *log.Logger
+	log   *levelLog
 	// onMessage is called for each new-message report, from the goroutine
 	// of run. It can call do.
 	onMessage func(gogsmmodem.MessageNotification)
@@ -58,7 +57,7 @@ type modemLink struct {
 
 // newModemLink returns a modemLink that is not ready. Start its loop with
 // run.
-func newModemLink(open func() (io.ReadWriteCloser, error), retry time.Duration, logger *log.Logger) *modemLink {
+func newModemLink(open func() (io.ReadWriteCloser, error), retry time.Duration, logger *levelLog) *modemLink {
 	return &modemLink{open: open, retry: retry, log: logger, err: errStarting}
 }
 
@@ -111,12 +110,12 @@ func (l *modemLink) serve(ctx context.Context, m *gogsmmodem.Modem) {
 	l.err = nil
 	l.logged = ""
 	l.mu.Unlock()
-	l.log.Println("modem ready")
+	l.log.Notice.Println("modem ready")
 
 	stop := context.AfterFunc(ctx, func() { m.Close() })
 	defer stop()
 	for packet := range m.OOB {
-		l.log.Printf("%#v\n", packet)
+		l.log.Debug.Printf("%#v\n", packet)
 		switch p := packet.(type) {
 		case gogsmmodem.SignalStatus:
 			l.mu.Lock()
@@ -146,7 +145,7 @@ func (l *modemLink) setNotReady(m *gogsmmodem.Modem, err error) {
 	l.signal = gogsmmodem.SignalStatus{}
 	if msg := err.Error(); msg != l.logged {
 		l.logged = msg
-		l.log.Println("modem:", msg)
+		l.log.Warning.Println("modem:", msg)
 	}
 }
 

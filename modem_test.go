@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"log"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -59,7 +58,7 @@ func (b *syncBuffer) String() string {
 func startLink(t *testing.T, open func() (io.ReadWriteCloser, error)) (link *modemLink, logs *syncBuffer) {
 	t.Helper()
 	logs = &syncBuffer{}
-	l := newModemLink(open, time.Millisecond, log.New(logs, "", 0))
+	l := newModemLink(open, time.Millisecond, newLevelLog(logs, 0))
 	ctx, cancel := context.WithCancel(context.Background())
 	done := make(chan struct{})
 	go func() {

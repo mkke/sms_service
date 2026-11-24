@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -18,7 +17,7 @@ import (
 func newTestServer(l *modemLink) *server {
 	return &server{
 		link:              l,
-		log:               log.New(io.Discard, "", 0),
+		log:               newLevelLog(io.Discard, 0),
 		password:          "pw",
 		heaterPhoneNumber: "491701234567",
 		heaterCode:        "1234",
@@ -36,7 +35,7 @@ func get(s *server, target string) (code int, body string) {
 
 // notReadyLink returns a modemLink that has not run.
 func notReadyLink() *modemLink {
-	return newModemLink(nil, time.Minute, log.New(io.Discard, "", 0))
+	return newModemLink(nil, time.Minute, newLevelLog(io.Discard, 0))
 }
 
 func TestSignalNotReady(t *testing.T) {
