@@ -22,7 +22,9 @@ command=/usr/sbin/daemon
 # The program's arguments are in sms_service_args, not sms_service_flags:
 # rc.subr puts ${name}_flags directly after command, where daemon(8) would
 # read them as its own options.
-command_args="-P ${pidfile} -r -S -T ${name} -u sms_service /usr/local/bin/sms_service ${sms_service_args}"
+# -f points the supervisor's standard descriptors at /dev/null, so it does
+# not hold open the output of the caller that started it.
+command_args="-P ${pidfile} -f -r -S -T ${name} -u sms_service /usr/local/bin/sms_service ${sms_service_args}"
 
 start_precmd=sms_service_prestart
 
