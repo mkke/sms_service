@@ -7,7 +7,9 @@ GITINFO := $(shell git rev-parse --short=8 HEAD)
 PLUGIN := opnsense/comms/sms_service
 PLUGIN_VERSION := $(shell sed -n 's/^PLUGIN_VERSION=[[:space:]]*//p' $(PLUGIN)/Makefile)
 PLUGIN_FILES := $(shell find $(PLUGIN) -type f)
-PACKAGE := build/os-sms_service-$(PLUGIN_VERSION).pkg
+# PLUGIN_REVISION, when set, replaces the revision of the plugin Makefile.
+PLUGIN_REVISION ?=
+PACKAGE := build/os-sms_service-$(PLUGIN_VERSION)$(if $(filter-out 0,$(PLUGIN_REVISION)),_$(PLUGIN_REVISION)).pkg
 
 .DELETE_ON_ERROR:
 
@@ -22,7 +24,7 @@ $(PACKAGE): sms_service $(PLUGIN_FILES)
 	@echo [freebsdpkgctl plugin lint] $(PLUGIN)
 	@$(FREEBSDPKGCTL) plugin lint $(PLUGIN)
 	@echo [freebsdpkgctl plugin build] $@
-	@$(FREEBSDPKGCTL) plugin build $(PLUGIN) --add /usr/local/bin/sms_service=sms_service --hash $(shell git rev-parse --short=9 HEAD) --tree $(shell git rev-parse 'HEAD^{tree}') --output build
+	@$(FREEBSDPKGCTL) plugin build $(PLUGIN) --add /usr/local/bin/sms_service=sms_service --hash $(shell git rev-parse --short=9 HEAD) --tree $(shell git rev-parse 'HEAD^{tree}') $(if $(PLUGIN_REVISION),--revision $(PLUGIN_REVISION)) --output build
 
 clean:
 	rm -rf sms_service build .depends .gomake
